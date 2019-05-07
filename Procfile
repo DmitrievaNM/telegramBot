@@ -1,0 +1,1 @@
+worker: python talktome_quiz_bot.py $PORT
