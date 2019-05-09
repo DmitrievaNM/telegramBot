@@ -3,6 +3,7 @@ import telebot
 from telebot import types
 from telebot.types import Message
 
+
 TOKEN = '839901203:AAEIcAlfKJb39N-ddm3Pe5NEQYwyorX_Zic'
 
 bot = telebot.TeleBot(TOKEN)
@@ -21,9 +22,7 @@ answers = { 1 : ("is", "am", "are", "be"),
             2 : ("Have", "Is", "Do", "Are"),
             3 : ("not watched", "watched", "watch", "watching")}
 
-right_answers = {   1 : "is",
-                    2 : "Is",
-                    3 : "watch"}
+right_answers = {1 : "is", 2 : "Is", 3 : "watch"}
 
 # functions for replying
 ready_markup = types.ReplyKeyboardMarkup()
@@ -31,9 +30,13 @@ start_button = 'I am ready!'
 ready_markup.row(start_button)
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
+    global question_number
+    global score
     bot.send_message(message.chat.id, 'Hello! This is a bot for checking your English level \n\n You will receive a list of questions. \n\n If you are ready push "I am ready" button', reply_markup=ready_markup)
     score = 0
     question_number = 1
+
+  
     
 
 # question sending function 
@@ -48,17 +51,14 @@ def send_question(message):
         markup.row(answers[question_number][2], answers[question_number][3])
         
         bot.send_message(message.chat.id, questions[question_number], reply_markup=markup)
-
+        
         if message.text == right_answers[question_number]:
             score += 1
 
         question_number += 1
         bot.register_next_step_handler(message, send_question)
     else:
-        bot.send_message(message.chat.id, 'Your score is: ' + str(score))
+        bot.send_message(message.chat.id, 'Your score is: ' + str(score) + '/3 \n\n Your level is ...')
 
 
-
-
-
-bot.polling()
+bot.polling(none_stop=True, interval=0)
