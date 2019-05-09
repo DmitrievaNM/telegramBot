@@ -32,6 +32,8 @@ ready_markup.row(start_button)
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     bot.send_message(message.chat.id, 'Hello! This is a bot for checking your English level \n\n You will receive a list of questions. \n\n If you are ready push "I am ready" button', reply_markup=ready_markup)
+    score = 0
+    question_number = 1
     
 
 # question sending function 
