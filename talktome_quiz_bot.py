@@ -22,7 +22,7 @@ answers = { 1 : ("is", "am", "are", "be"),
             2 : ("Have", "Is", "Do", "Are"),
             3 : ("not watched", "watched", "watch", "watching")}
 
-right_answers = {1 : "is", 2 : "Is", 3 : "watch"}
+right_answers = {0 : "none", 1 : "is", 2 : "Is", 3 : "watch"}
 
 # functions for replying
 ready_markup = types.ReplyKeyboardMarkup()
@@ -32,19 +32,16 @@ ready_markup.row(start_button)
 def send_welcome(message):
     global question_number
     global score
-    bot.send_message(message.chat.id, 'Hello! This is a bot for checking your English level \n\n You will receive a list of questions. \n\n If you are ready push "I am ready" button', reply_markup=ready_markup)
+    bot.send_message(message.chat.id, 'Hello! I am a bot for checking your English level \n\nYou will receive a list of questions. \n\nIf you are ready push "I am ready" button', reply_markup=ready_markup)
     score = 0
     question_number = 1
-
   
-    
-
 # question sending function 
 @bot.message_handler(content_types=['text'])
 def send_question(message):
     global question_number
     global score
-
+    
     if question_number <= len(questions):
         markup = types.ReplyKeyboardMarkup()
         markup.row(answers[question_number][0], answers[question_number][1])
@@ -52,13 +49,16 @@ def send_question(message):
         
         bot.send_message(message.chat.id, questions[question_number], reply_markup=markup)
         
-        if message.text == right_answers[question_number]:
+        if message.text == right_answers[question_number-1]:
             score += 1
 
         question_number += 1
-        bot.register_next_step_handler(message, send_question)
+        #bot.register_next_step_handler(message, send_question)
+    
     else:
+        if message.text == right_answers[question_number-1]:
+            score += 1
         bot.send_message(message.chat.id, 'Your score is: ' + str(score) + '/3 \n\n Your level is ...')
-
+            
 
 bot.polling(none_stop=True, interval=0)
