@@ -1,64 +1,64 @@
+"""This script (Telegram bot) prompts a user to check his English level
+ using a standard English quiz"""
+
 import telebot
-
 from telebot import types
-from telebot.types import Message
-
 
 TOKEN = '839901203:AAEIcAlfKJb39N-ddm3Pe5NEQYwyorX_Zic'
+BOT = telebot.TeleBot(TOKEN)
 
-bot = telebot.TeleBot(TOKEN)
+HELLO_STRING = """Hello! I am a bot for checking your English level.
+You will receive a list of questions.
+If you are ready push "I am ready" button."""
 
-# variable for counting right answers
-score = 0
-# variable for counting questions
-question_number = 1
+class TalkToMeQuizBot:
+    """The main class"""
+    def __init__(self):
+        # variable for counting right answers
+        self.score = 0
 
-# dictionaries with data for quiz
-questions = {   1 : "Q1: Tom _________ English", 
-                2 : "Q2: _________ there a restaurant near here?", 
-                3 : "Q3: I didn't _________ TV last night."}
+        # variable for counting questions
+        self.question_number = 1
 
-answers = { 1 : ("is", "am", "are", "be"),
-            2 : ("Have", "Is", "Do", "Are"),
-            3 : ("not watched", "watched", "watch", "watching")}
+        # dictionaries with data for quiz
+        self.questions = {1 : "Q1: Tom _________ English",
+                          2 : "Q2: _________ there a restaurant near here?",
+                          3 : "Q3: I didn't _________ TV last night."}
 
-right_answers = {0 : "none", 1 : "is", 2 : "Is", 3 : "watch"}
+        self.answers = {1 : ("is", "am", "are", "be"),
+                        2 : ("Have", "Is", "Do", "Are"),
+                        3 : ("not watched", "watched", "watch", "watching")}
 
-# functions for replying
-ready_markup = types.ReplyKeyboardMarkup()
-start_button = 'I am ready!'
-ready_markup.row(start_button)
-@bot.message_handler(commands=['start', 'help'])
+        self.right_answers = {0 : "none", 1 : "is", 2 : "Is", 3 : "watch"}
+
+QUIZ = TalkToMeQuizBot()
+@BOT.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    global question_number
-    global score
-    bot.send_message(message.chat.id, 'Hello! I am a bot for checking your English level \n\nYou will receive a list of questions. \n\nIf you are ready push "I am ready" button', reply_markup=ready_markup)
-    score = 0
-    question_number = 1
-  
-# question sending function 
-@bot.message_handler(content_types=['text'])
+    """A function for starting a conversation with the bot"""
+    ready_markup = types.ReplyKeyboardMarkup()
+    start_button = 'I am ready!'
+    ready_markup.row(start_button)
+    BOT.send_message(message.chat.id, HELLO_STRING, reply_markup=ready_markup)
+    QUIZ.score = 0
+    QUIZ.question_number = 1
+
+@BOT.message_handler(content_types=['text'])
 def send_question(message):
-    global question_number
-    global score
-    
-    if question_number <= len(questions):
+    """A function for sending questions to a user"""
+    if QUIZ.question_number <= len(QUIZ.questions):
         markup = types.ReplyKeyboardMarkup()
-        markup.row(answers[question_number][0], answers[question_number][1])
-        markup.row(answers[question_number][2], answers[question_number][3])
-        
-        bot.send_message(message.chat.id, questions[question_number], reply_markup=markup)
-        
-        if message.text == right_answers[question_number-1]:
-            score += 1
-
-        question_number += 1
-        #bot.register_next_step_handler(message, send_question)
-    
+        markup.row(QUIZ.answers[QUIZ.question_number][0], QUIZ.answers[QUIZ.question_number][1])
+        markup.row(QUIZ.answers[QUIZ.question_number][2], QUIZ.answers[QUIZ.question_number][3])
+        BOT.send_message(message.chat.id, QUIZ.questions[QUIZ.question_number], reply_markup=markup)
+        if message.text == QUIZ.right_answers[QUIZ.question_number - 1]:
+            QUIZ.score += 1
+        QUIZ.question_number += 1
     else:
-        if message.text == right_answers[question_number-1]:
-            score += 1
-        bot.send_message(message.chat.id, 'Your score is: ' + str(score) + '/3 \n\n Your level is ...')
-            
+        if message.text == QUIZ.right_answers[QUIZ.question_number - 1]:
+            QUIZ.score += 1
+        markup = types.ReplyKeyboardRemove(selective=False)
+        BOT.send_message(message.chat.id,
+                         'Your score is: ' + str(QUIZ.score) + '/3',
+                         reply_markup=markup)
 
-bot.polling(none_stop=True, interval=0)
+BOT.polling(none_stop=True, interval=0)
