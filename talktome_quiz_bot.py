@@ -31,34 +31,44 @@ class TalkToMeQuizBot:
 
         self.right_answers = {0 : "none", 1 : "is", 2 : "Is", 3 : "watch"}
 
+        self.results = {}
+
+    def checking_answer(self, answer, chat_id, score, question_number):
+        """A function for checking right answers"""
+        if answer == self.right_answers[question_number - 1]:
+            score += 1
+        self.results[chat_id] = (score, question_number)
+
 QUIZ = TalkToMeQuizBot()
 @BOT.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     """A function for starting a conversation with the bot"""
+    QUIZ.results[message.chat.id] = (QUIZ.score, QUIZ.question_number)
     ready_markup = types.ReplyKeyboardMarkup()
     start_button = 'I am ready!'
     ready_markup.row(start_button)
     BOT.send_message(message.chat.id, HELLO_STRING, reply_markup=ready_markup)
-    QUIZ.score = 0
-    QUIZ.question_number = 1
+
 
 @BOT.message_handler(content_types=['text'])
 def send_question(message):
     """A function for sending questions to a user"""
-    if QUIZ.question_number <= len(QUIZ.questions):
+    chat_id = message.chat.id
+    this_question_number = QUIZ.results[chat_id][1]
+
+    QUIZ.checking_answer(message.text, chat_id, QUIZ.results[chat_id][0], this_question_number)
+    if this_question_number <= len(QUIZ.questions):
         markup = types.ReplyKeyboardMarkup()
-        markup.row(QUIZ.answers[QUIZ.question_number][0], QUIZ.answers[QUIZ.question_number][1])
-        markup.row(QUIZ.answers[QUIZ.question_number][2], QUIZ.answers[QUIZ.question_number][3])
-        BOT.send_message(message.chat.id, QUIZ.questions[QUIZ.question_number], reply_markup=markup)
-        if message.text == QUIZ.right_answers[QUIZ.question_number - 1]:
-            QUIZ.score += 1
-        QUIZ.question_number += 1
+        markup.row(QUIZ.answers[this_question_number][0], QUIZ.answers[this_question_number][1])
+        markup.row(QUIZ.answers[this_question_number][2], QUIZ.answers[this_question_number][3])
+        BOT.send_message(chat_id, QUIZ.questions[this_question_number], reply_markup=markup)
+        this_question_number += 1
+        QUIZ.results[chat_id] = (QUIZ.results[chat_id][0], this_question_number)
     else:
-        if message.text == QUIZ.right_answers[QUIZ.question_number - 1]:
-            QUIZ.score += 1
         markup = types.ReplyKeyboardRemove(selective=False)
         BOT.send_message(message.chat.id,
-                         'Your score is: ' + str(QUIZ.score) + '/3',
+                         'Your score is: ' + str(QUIZ.results[chat_id][0]) + '/3',
                          reply_markup=markup)
+        QUIZ.results[chat_id] = (QUIZ.results[chat_id][0], this_question_number)
 
 BOT.polling(none_stop=True, interval=0)
