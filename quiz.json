@@ -1,0 +1,67 @@
+{"questions" : {
+        "0" : {
+            "question" : "",
+            "A" : "",
+            "B" : "",
+            "C" : "",
+            "right" : ""},
+        "1" : {
+            "question" : "Where _______ from? I’m from Russia.",
+            "A" : "you are",
+            "B" : "you",
+            "C" : "are you",
+            "right" : "are you"},
+        "2" : {
+            "question" : "We have ___ house in Moscow.",
+            "A" : "any",
+            "B" : "a",
+            "C" : "an",
+            "right" : "a"},
+        "3" : {
+            "question" : "I have two _______, a boy and a girl.",
+            "A" : "sons",
+            "B" : "daughters",
+            "C" : "children",
+            "right" : "children"},
+        "4" : {
+            "question" : "I work in a _______. I’m a doctor.",
+            "A" : "hospital",
+            "B" : "hotel",
+            "C" : "supermarket",
+            "right" : "hospital"},
+        "5" : {
+            "question" : "This is my brother. _______ name’s Paul.",
+            "A" : "Her",
+            "B" : "His",
+            "C" : "He’s",
+            "right" : "His"},
+        "6" : {
+            "question" : "_______ five people in my family.",
+            "A" : "They are",
+            "B" : "There is",
+            "C" : "There are",
+            "right" : "There are"},
+        "7" : {
+            "question" : "I get up _______ 7 o’clock in the morning.",
+            "A" : "for",
+            "B" : "at",
+            "C" : "in",
+            "right" : "at"},
+        "8" : {
+            "question" : "I like apples, but I _______ bananas.",
+            "A" : "don’t like",
+            "B" : "like",
+            "C" : "do like",
+            "right" : "don’t like"},
+        "9" : {
+            "question" : "Excuse me, _______ speak French?",
+            "A" : "do you",
+            "B" : "you do",
+            "C" : "you",
+            "right" : "do you"},
+        "10" : {
+            "question" : "How much are _______ shoes?",
+            "A" : "this",
+            "B" : "these",
+            "C" : "that",
+            "right" : "these"}}}
