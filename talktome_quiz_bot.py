@@ -9,7 +9,7 @@ TOKEN = '839901203:AAEIcAlfKJb39N-ddm3Pe5NEQYwyorX_Zic'
 BOT = telebot.TeleBot(TOKEN)
 
 HELLO_STRING = """Hello! I am a bot for checking your English level.
-You will receive a list of questions.
+You will receive a list of 120 questions.
 If you are ready push "I am ready" button."""
 
 class TalkToMeQuizBot:
@@ -27,11 +27,58 @@ class TalkToMeQuizBot:
 
         self.results = {}
 
+    def user_level(self, score):
+        """Checking user level"""
+        level = ""
+        if 0 <= score <= 15:
+            level = "Starter"
+        if 15 < score <= 35:
+            level = "Elementary"
+        if 35 < score <= 55:
+            level = "Pre-Intermediate"
+        if 55 < score <= 75:
+            level = "Intermediate"
+        if 75 < score <= 95:
+            level = "Upper Intermediate"
+        if score > 95:
+            level = "Advanced"
+        return level
+
     def checking_answer(self, answer, chat_id, score, question_number):
         """A function for checking right answers"""
         if answer == self.quiz["questions"][str(int(question_number) - 1)]["right"]:
             score += 1
         self.results[chat_id] = (score, question_number)
+
+    def next_question(self, number, chat, message):
+        """Sending next question from dictionary"""
+        if int(number) < int(len(self.quiz["questions"])):
+            markup = types.ReplyKeyboardMarkup()
+            if len(self.quiz["questions"][number]) == 5:
+                markup.row(self.quiz["questions"][number]["A"],
+                           self.quiz["questions"][number]["B"])
+                markup.row(self.quiz["questions"][number]["C"])
+            else:
+                if len(self.quiz["questions"][number]) == 6:
+                    markup.row(self.quiz["questions"][number]["A"],
+                               self.quiz["questions"][number]["B"])
+                    markup.row(self.quiz["questions"][number]["C"],
+                               self.quiz["questions"][number]["D"])
+
+            BOT.send_message(chat,
+                             number + ". " + self.quiz["questions"][number]["question"],
+                             reply_markup=markup)
+            number = int(number) + 1
+            self.results[chat] = (self.results[chat][0], number)
+        else:
+            markup = types.ReplyKeyboardRemove(selective=False)
+            BOT.send_message(message.chat.id,
+                             'Your score is: ' +
+                             str(self.results[chat][0]) + '/' +
+                             str(len(self.quiz["questions"])-1) +
+                             "\nYour level is " + self.user_level(self.results[chat][0]),
+                             reply_markup=markup)
+            self.results[chat] = (self.results[chat][0], number)
 
 QUIZ = TalkToMeQuizBot()
 @BOT.message_handler(commands=['start', 'help'])
@@ -51,23 +98,6 @@ def send_question(message):
     this_question_number = str(QUIZ.results[chat_id][1])
 
     QUIZ.checking_answer(message.text, chat_id, QUIZ.results[chat_id][0], this_question_number)
-    if int(this_question_number) < int(len(QUIZ.quiz["questions"])):
-        markup = types.ReplyKeyboardMarkup()
-        markup.row(QUIZ.quiz["questions"][this_question_number]["A"],
-                   QUIZ.quiz["questions"][this_question_number]["B"])
-        markup.row(QUIZ.quiz["questions"][this_question_number]["C"])
-        BOT.send_message(chat_id,
-                         QUIZ.quiz["questions"][this_question_number]["question"],
-                         reply_markup=markup)
-        this_question_number = int(this_question_number) + 1
-        QUIZ.results[chat_id] = (QUIZ.results[chat_id][0], this_question_number)
-    else:
-        markup = types.ReplyKeyboardRemove(selective=False)
-        BOT.send_message(message.chat.id,
-                         'Your score is: ' +
-                         str(QUIZ.results[chat_id][0]) + '/' +
-                         str(len(QUIZ.quiz["questions"])-1),
-                         reply_markup=markup)
-        QUIZ.results[chat_id] = (QUIZ.results[chat_id][0], this_question_number)
+    QUIZ.next_question(this_question_number, chat_id, message)
 
 BOT.polling(none_stop=True, interval=0)
