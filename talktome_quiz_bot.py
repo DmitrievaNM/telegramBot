@@ -88,8 +88,10 @@ class TalkToMeQuizBot:
                              str(len(self.quiz["questions"])-1) +
                              "\nYour level is " + self.user_level(self.results[chat][0]),
                              reply_markup=markup)
-            BOT.send_message(message.chat.id,
-                             "This is a list of questions you answered wrong:\n\n" + wrong_string)
+            if self.wrong_list[chat]:
+                BOT.send_message(message.chat.id,
+                                 "This is a list of questions you answered wrong:\n\n" +
+                                 wrong_string)
             self.results[chat] = (self.results[chat][0], number)
 
 QUIZ = TalkToMeQuizBot()
