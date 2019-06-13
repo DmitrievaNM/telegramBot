@@ -26,6 +26,7 @@ class TalkToMeQuizBot:
             self.quiz = json.load(read_file)
 
         self.results = {}
+        self.wrong_list = {}
 
     def user_level(self, score):
         """Checking user level"""
@@ -48,6 +49,8 @@ class TalkToMeQuizBot:
         """A function for checking right answers"""
         if answer == self.quiz["questions"][str(int(question_number) - 1)]["right"]:
             score += 1
+        else:
+            self.wrong_list[chat_id].append(str(int(question_number)-1))
         self.results[chat_id] = (score, question_number)
 
     def next_question(self, number, chat, message):
@@ -71,6 +74,13 @@ class TalkToMeQuizBot:
             number = int(number) + 1
             self.results[chat] = (self.results[chat][0], number)
         else:
+            self.wrong_list[chat].remove("0")
+            wrong_string = ""
+            for wrong_answer in self.wrong_list[chat]:
+                wrong_string += ("Question " + str(wrong_answer) + ". " +
+                                 self.quiz["questions"][wrong_answer]["question"] +
+                                 " Right answer: " +
+                                 self.quiz["questions"][wrong_answer]["right"] + "\n\n")
             markup = types.ReplyKeyboardRemove(selective=False)
             BOT.send_message(message.chat.id,
                              'Your score is: ' +
@@ -78,6 +88,8 @@ class TalkToMeQuizBot:
                              str(len(self.quiz["questions"])-1) +
                              "\nYour level is " + self.user_level(self.results[chat][0]),
                              reply_markup=markup)
+            BOT.send_message(message.chat.id,
+                             "This is a list of questions you answered wrong:\n\n" + wrong_string)
             self.results[chat] = (self.results[chat][0], number)
 
 QUIZ = TalkToMeQuizBot()
@@ -85,6 +97,7 @@ QUIZ = TalkToMeQuizBot()
 def send_welcome(message):
     """A function for starting a conversation with the bot"""
     QUIZ.results[message.chat.id] = (QUIZ.score, QUIZ.question_number)
+    QUIZ.wrong_list[message.chat.id] = []
     ready_markup = types.ReplyKeyboardMarkup()
     start_button = 'I am ready!'
     ready_markup.row(start_button)
