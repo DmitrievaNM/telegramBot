@@ -50,7 +50,12 @@ class TalkToMeQuizBot:
         if answer == self.quiz["questions"][str(int(question_number) - 1)]["right"]:
             score += 1
         else:
-            self.wrong_list[chat_id].append(str(int(question_number)-1))
+            question_dic = self.quiz["questions"][str(int(question_number) - 1)]
+            self.wrong_list[chat_id].append("Question " + str(int(question_number)-1) + ". " +
+                                            question_dic["question"] +
+                                            " Right answer: " +
+                                            question_dic["right"] +
+                                            "\n\n")
         self.results[chat_id] = (score, question_number)
 
     def next_question(self, number, chat, message):
@@ -74,13 +79,7 @@ class TalkToMeQuizBot:
             number = int(number) + 1
             self.results[chat] = (self.results[chat][0], number)
         else:
-            self.wrong_list[chat].remove("0")
-            wrong_string = ""
-            for wrong_answer in self.wrong_list[chat]:
-                wrong_string += ("Question " + str(wrong_answer) + ". " +
-                                 self.quiz["questions"][wrong_answer]["question"] +
-                                 " Right answer: " +
-                                 self.quiz["questions"][wrong_answer]["right"] + "\n\n")
+            del self.wrong_list[chat][0]
             markup = types.ReplyKeyboardRemove(selective=False)
             BOT.send_message(message.chat.id,
                              'Your score is: ' +
@@ -90,8 +89,9 @@ class TalkToMeQuizBot:
                              reply_markup=markup)
             if self.wrong_list[chat]:
                 BOT.send_message(message.chat.id,
-                                 "This is a list of questions you answered wrong:\n\n" +
-                                 wrong_string)
+                                 "This is a list of questions you answered wrong:\n\n")
+                for wrong_answer in self.wrong_list[chat]:
+                    BOT.send_message(message.chat.id, wrong_answer)
             self.results[chat] = (self.results[chat][0], number)
 
 QUIZ = TalkToMeQuizBot()
