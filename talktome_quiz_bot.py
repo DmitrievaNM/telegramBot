@@ -8,9 +8,20 @@ from telebot import types
 TOKEN = '839901203:AAEIcAlfKJb39N-ddm3Pe5NEQYwyorX_Zic'
 BOT = telebot.TeleBot(TOKEN)
 
-HELLO_STRING = """Hello! I am a bot for checking your English level.
-You will receive a list of 120 questions.
-If you are ready push "I am ready" button."""
+HELLO_STRING = """Hello! I am a bot, designed to help you find out at which level of English you are.
+
+You will receive a list of 120 multiple-choice questions, 20 at each level from Starter to Advanced (covering CEFR levels A1 to
+C1). Choose the best answer for each question.
+
+First 100 users who will send their results to @talktome_agency, would recieve a present from TalkToMe Ltd.  
+
+Are you ready? Push the "I am ready" button!"""
+
+ADVERT_STRING = """Good job!
+
+An oral placement test, designed to be used in conjunction with this test, is avaliable via the TalkToMe Ltd. service.
+
+Send your results to @talktome_agency and we will provide you with a native speaker for an online oral test. It is FREE for the first HUNDRED users."""
 
 class TalkToMeQuizBot:
     """The main class"""
@@ -87,6 +98,7 @@ class TalkToMeQuizBot:
                              str(len(self.quiz["questions"])-1) +
                              "\nYour level is " + self.user_level(self.results[chat][0]),
                              reply_markup=markup)
+            BOT.send_message(message.chat.id, ADVERT_STRING)
             if self.wrong_list[chat]:
                 BOT.send_message(message.chat.id,
                                  "This is a list of questions you answered wrong:\n\n")
