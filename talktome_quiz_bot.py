@@ -8,20 +8,21 @@ from telebot import types
 TOKEN = '839901203:AAEIcAlfKJb39N-ddm3Pe5NEQYwyorX_Zic'
 BOT = telebot.TeleBot(TOKEN)
 
-HELLO_STRING = """Hello! I am a bot, designed to help you find out at which level of English you are.
+HELLO_STRING = """Hello! I am a bot designed to help you find out at which level of English you are.
 
-You will receive a list of 120 multiple-choice questions, 20 at each level from Starter to Advanced (covering CEFR levels A1 to
-C1). Choose the best answer for each question.
+You will receive a list of 120 multiple-choice questions, 20 at each level from Starter to Advanced (covering CEFR levels A1 to C1). Choose the best answer for each question.
 
-First 100 users who will send their results to @talktome_agency, would recieve a present from TalkToMe Ltd.  
+The first HUNDRED (100) users to send their results to @talktome_agency will receive a gift from TalkToMe Ltd.
 
 Are you ready? Push the "I am ready" button!"""
 
 ADVERT_STRING = """Good job!
 
-An oral placement test, designed to be used in conjunction with this test, is avaliable via the TalkToMe Ltd. service.
+A gift from TalkToMe Ltd is a FREE online oral test for the first HUNDRED (100) users.
 
-Send your results to @talktome_agency and we will provide you with a native speaker for an online oral test. It is FREE for the first HUNDRED users."""
+An oral placement test, designed to be used in conjunction with this test, is available via the TalkToMe Ltd. service.
+
+Send your results to @talktome_agency and we will provide you with a native speaker for an online oral test."""
 
 class TalkToMeQuizBot:
     """The main class"""
